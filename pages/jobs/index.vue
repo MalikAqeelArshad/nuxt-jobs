@@ -1,0 +1,4 @@
+<template>
+  <JobListings />
+  <!-- <NuxtWelcome /> -->
+</template>

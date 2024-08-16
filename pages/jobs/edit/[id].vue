@@ -1,0 +1,234 @@
+<script setup>
+const route = useRoute();
+const router = useRouter();
+const { $toast } = useNuxtApp();
+
+const jobId = route.params.id;
+
+const form = reactive({
+  type: 'Full-Time',
+  title: '',
+  description: '',
+  salary: 'Under 50K AED',
+  location: '',
+  company: {
+    name: '',
+    description: '',
+    contactEmail: '',
+    contactPhone: '',
+  },
+  isLoading: true,
+});
+
+try {
+  const job = await useApiFetch(`/api/jobs/${jobId}`);
+  Object.keys(form).forEach(key => form[key] = job[key]);
+} catch(e) {
+  // console.log('catch', e);
+  router.push('/not-found');
+} finally {
+  form.isLoading = false;
+}
+
+const handleSubmit = async () => {
+  form.isLoading = true;
+  const updatedJob = {
+    method: 'PUT',
+    body: {
+      title: form.title,
+      type: form.type,
+      location: form.location,
+      description: form.description,
+      salary: form.salary,
+      company: {
+        name: form.company.name,
+        description: form.company.description,
+        contactEmail: form.company.contactEmail,
+        contactPhone: form.company.contactPhone,
+      }
+    }
+  };
+
+  try {
+    await useApiFetch(`/api/jobs/${jobId}`, updatedJob);
+    $toast.success('Job Updated Successfully');
+    router.push(`/jobs/${jobId}`);
+  } catch(e) {
+    // console.log('catch', e);
+    $toast.error('Job Was Not Added');
+  } finally {
+    form.isLoading = false;
+  }
+};
+</script>
+
+<template>
+  <section class="bg-green-50">
+    <div class="container m-auto max-w-2xl py-24">
+      <div
+        class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0"
+      >
+        <form @submit.prevent="handleSubmit">
+          <h2 class="text-3xl text-center font-semibold mb-6">Edit Job</h2>
+
+          <div class="mb-4">
+            <label for="type" class="block text-gray-700 font-bold mb-2"
+              >Job Type</label
+            >
+            <select
+              v-model="form.type"
+              id="type"
+              name="type"
+              class="border rounded w-full py-2 px-3"
+              required
+            >
+              <option value="Full-Time">Full-Time</option>
+              <option value="Part-Time">Part-Time</option>
+              <option value="Remote">Remote</option>
+              <option value="Internship">Internship</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2"
+              >Job Listing Name</label
+            >
+            <input
+              type="text"
+              v-model="form.title"
+              id="name"
+              name="name"
+              class="border rounded w-full py-2 px-3 mb-2"
+              placeholder="eg. Full Stack Developer In Dubai"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label for="description" class="block text-gray-700 font-bold mb-2"
+              >Description</label
+            >
+            <textarea
+              id="description"
+              v-model="form.description"
+              name="description"
+              class="border rounded w-full py-2 px-3"
+              rows="4"
+              placeholder="Add any job duties, expectations, requirements, etc"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label for="type" class="block text-gray-700 font-bold mb-2"
+              >Salary</label
+            >
+            <select
+              id="salary"
+              v-model="form.salary"
+              name="salary"
+              class="border rounded w-full py-2 px-3"
+              required
+            >
+            <option value='Under 50K AED'>Under 50K AED</option>
+            <option value='50K - 60K AED'>50K - 60K AED</option>
+            <option value='60K - 70K AED'>60K - 70K AED</option>
+            <option value='70K - 80K AED'>70K - 80K AED</option>
+            <option value='80K - 90K AED'>80K - 90K AED</option>
+            <option value='90K - 100K AED'>90K - 100K AED</option>
+            <option value='100K - 125K AED'>100K - 125K AED</option>
+            <option value='125K - 150K AED'>125K - 150K AED</option>
+            <option value='150K - 175K AED'>150K - 175K AED</option>
+            <option value='175K - 200K AED'>175K - 200K AED</option>
+            <option value='Over 200K AED'>Over 200K AED</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2"> Location </label>
+            <input
+              type="text"
+              v-model="form.location"
+              id="location"
+              name="location"
+              class="border rounded w-full py-2 px-3 mb-2"
+              placeholder="Company Location"
+              required
+            />
+          </div>
+
+          <h3 class="text-2xl mb-5">Company Info</h3>
+
+          <div class="mb-4">
+            <label for="company" class="block text-gray-700 font-bold mb-2"
+              >Company Name</label
+            >
+            <input
+              type="text"
+              v-model="form.company.name"
+              id="company"
+              name="company"
+              class="border rounded w-full py-2 px-3"
+              placeholder="Company Name"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="company_description"
+              class="block text-gray-700 font-bold mb-2"
+              >Company Description</label
+            >
+            <textarea
+              id="company_description"
+              v-model="form.company.description"
+              name="company_description"
+              class="border rounded w-full py-2 px-3"
+              rows="4"
+              placeholder="What does your company do?"
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label
+              for="contact_email"
+              class="block text-gray-700 font-bold mb-2"
+              >Contact Email</label
+            >
+            <input
+              type="email"
+              v-model="form.company.contactEmail"
+              id="contact_email"
+              name="contact_email"
+              class="border rounded w-full py-2 px-3"
+              placeholder="Email address for applicants"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="contact_phone"
+              class="block text-gray-700 font-bold mb-2"
+              >Contact Phone</label
+            >
+            <input
+              type="tel"
+              v-model="form.company.contactPhone"
+              id="contact_phone"
+              name="contact_phone"
+              class="border rounded w-full py-2 px-3"
+              placeholder="Optional phone for applicants"
+            />
+          </div>
+
+          <div>
+            <button
+              class="text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline" :class="form.isLoading ? 'bg-green-300' : 'bg-green-500 hover:bg-green-600'"
+              type="submit" :disabled="form.isLoading"
+            >
+              <img v-if="form.isLoading" src="@/assets/icons/spinner.svg" class="inline h-5"> Update Job
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</template>
