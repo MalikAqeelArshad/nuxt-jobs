@@ -6,6 +6,11 @@ export default defineNuxtConfig({
   alias: {
     assets: '/<rootDir>/assets',
   },
+  app: {
+    head: {
+      title: 'Nuxt Jobs'
+    }
+  },
   nitro: {
     routeRules: {
       '/api/**': { proxy: 'https://react-mongoose-api.vercel.app/**' },
