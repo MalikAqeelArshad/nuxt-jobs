@@ -29,10 +29,9 @@ const preventDefault = (e) => e.preventDefault();
 					<img class="inline-block h-5 mb-1 mr-1" :src="nuxt" alt="Nuxt" /> Nuxt
 				</a>
 				<a
-					href='' @click="preventDefault" target="_blank"
+					href='https://next-jobs-mongodb.vercel.app' target="_blank"
 					class='block px-4 py-2 text-gray-700 hover:bg-gray-100'>
 					<img class="inline-block h-5 mb-1 mr-1" :src="next" alt="Next" /> Next
-					<small class="text-gray-300">coming soon</small>
 				</a>
 			</div>
 		</div>
